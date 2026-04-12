@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UI 改进预览 — OpenHarness</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+    :root {
+      --color-bg: #F8FAFC;
+      --color-text: #1E293B;
+      --color-sidebar-bg: #F1F5F9;
+      --color-border: #E2E8F0;
+      --color-primary: #475569;
+      --color-secondary: #64748B;
+      --color-cta: #2563EB;
+      --color-code-bg: #F3F4F6;
+      --color-hover-bg: #E2E8F0;
+      --color-active-bg: #DBEAFE;
+      --color-active-text: #1D4ED8;
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    }
+
+    .dark {
+      --color-bg: #0F172A;
+      --color-text: #F1F5F9;
+      --color-sidebar-bg: #1E293B;
+      --color-border: #334155;
+      --color-primary: #94A3B8;
+      --color-secondary: #64748B;
+      --color-cta: #3B82F6;
+      --color-code-bg: #1E293B;
+;
+      --color-hover-bg: #334155;
+      --color-active-bg: #1E3A8A;
+      --color-active-text: #93C5FD;
+    }
+
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    }
+
+    *:focus-visible {
+      outline: 2px solid var(--color-cta);
+      outline-offset: 2px;
+    }
+
+    button, a {
+      cursor: pointer;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--color-sidebar-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--color-secondary);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Navigation Bar (Floating) -->
+  <header class="fixed top-4 left-4 right-4 z-50 h-14 bg-[var(--color-bg)]/95 backdrop-blur-md border border-[var(--color-border)] rounded-xl flex items-center px-5 shadow-[var(--shadow-md)]">
+    <div class="flex items-center justify-between w-full max-w-[1400px] mx-auto">
+      <div class="flex items-center gap-3">
+        <button class="p-2 rounded-lg hover:bg-[var(--color-hover-bg)] transition-all duration-200 text-[var(--color-secondary)] lg:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-[var(--color-cta)] rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-[var(--shadow-sm)]">OH</div>
+          <span class="font-semibold text-[var(--color-text)] hidden sm:inline font-['JetBrains_Mono']">OpenHarness</span>
+          <span class="text-[var(--color-border)] hidden sm:inline">/</span>
+          <span class="text-[var(--color-secondary)] text-sm hidden sm:inline">首页</span>
+        </div>
+      </div>
+      <nav class="flex items-center gap-3">
+        <a href="#" class="text-sm text-[var(--color-secondary)] hover:text-[var(--color-cta)] transition-all duration-200 hidden md:inline hover:underline">Home</a>
+        <a href="#" class="text-sm text-[var(--color-secondary)] hover:text-[var(--color-cta)] transition-all duration-200 hidden md:inline hover:underline">User Guide</a>
+        <a href="#" class="text-sm text-[var(--color-secondary)] hover:text-[var(--color-cta)] transition-all duration-200 hidden md:inline hover:underline">Dev Docs</a>
+        <div class="w-px h-5 bg-[var(--color-border)] hidden md:block"></div>
+        <button id="theme-toggle" class="p-2 rounded-lg hover:bg-[var(--color-hover-bg)] transition-all duration-200 text-[var(--color-secondary)]">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="flex pt-20">
+    <!-- Sidebar -->
+    <aside class="fixed left-0 top-0 bottom-0 z-40 w-64 overflow-y-auto bg-[var(--color-sidebar-bg)] border-r border-[var(--color-border)] py-5 px-3 pt-20">
+      <nav class="space-y-1">
+        <!-- Home Link -->
+        <a href="#" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium bg-[var(--color-active-bg)] text-[var(--color-active-text)] shadow-[var(--shadow-sm)]">
+          <span>首页</span>
+        </a>
+
+        <!-- Section: 用户手册 -->
+        <div>
+          <button class="flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-wider hover:bg-[var(--color-hover-bg)]">
+            <span>用户手册</span>
+            <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <ul class="space-y-0.5 pl-2 mt-1.5">
+            <li><a href="#" class="block px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-hover-bg)] transition-all">快速开始</a></li>
+            <li><a href="#" class="block px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-hover-bg)] transition-all">安装指南</a></li>
+            <li><a href="#" class="block px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-hover-bg)] transition-all">CLI 参考</a></li>
+          </ul>
+        </div>
+
+        <!-- Section: 开发者文档 -->
+        <div>
+          <button class="flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-xs font-semibold text-[var(--color-secondary)] uppercase tracking-wider hover:bg-[var(--color-hover-bg)]">
+            <span>开发者文档</span>
+            <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <ul class="space-y-0.5 pl-2 mt-1.5">
+            <li><a href="#" class="block px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-hover-bg)] transition-all">架构概览</a></li>
+            <li><a href="#" class="block px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-hover-bg)] transition-all">设计原则</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64 min-h-screen">
+      <article class="max-w-4xl mx-auto px-8 py-12">
+        <h1 style="font-family: 'JetBrains Mono', monospace;" class="text-3xl font-semibold mb-6">欢迎来到 OpenHarness 文档</h1>
+
+        <p class="text-[var(--color-text)] mb-4 leading-relaxed">
+          OpenHarness 是一个开源的 Python Agent Harness，为 LLM 提供工具调用、技能加载、记忆系统和多代理协调功能。
+        </p>
+
+        <h2 style="font-family: 'JetBrains Mono', monospace;" class="text-2xl font-semibold mb-4 mt-8">主要特性</h2>
+
+        <ul class="list-disc pl-6 space-y-2 text-[var(--color-text)]">
+          <li>43+ 内置工具（文件 I/O、Shell、搜索、Web、MCP）</li>
+          <li>技能系统（兼容 Claude Code 格式）</li>
+          <li>持久化记忆系统</li>
+          <li>多代理协调</li>
+          <li>权限管理系统</li>
+        </ul>
+
+        <h2 style="font-family: 'JetBrains Mono', monospace;" class="text-2xl font-semibold mb-4 mt-8">快速开始</h2>
+
+        <pre class="bg-[var(--color-code-bg)] rounded-lg p-4 overflow-x-auto border border-[var(--color-border)] shadow-[var(--shadow-sm)]"><code style="font-family: 'JetBrains Mono', monospace; color: var(--color-cta);"># 安装 OpenHarness
+pip install openharness
+
+# 运行 Agent
+openharness agent</code></pre>
+
+        <p class="text-[var(--color-text)] mb-4 mt-6 leading-relaxed">
+          访问 <a href="#" class="text-[var(--color-cta)] hover:underline">用户指南</a> 了解更多使用方法。
+        </p>
+      </article>
+    </main>
+  </div>
+
+  <!-- Theme Toggle Script -->
+  <script>
+    document.getElementById('theme-toggle').addEventListener('click', function() {
+      document.documentElement.classList.toggle('dark');
+    });
+  </script>
+</body>
+</html>

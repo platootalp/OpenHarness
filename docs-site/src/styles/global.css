@@ -1,33 +1,263 @@
+/* Design System Fonts */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --color-bg: #ffffff;
-    --color-text: #1f2937;
-    --color-sidebar-bg: #f9fafb;
-    --color-border: #e5e7eb;
-    --color-primary: #2563eb;
-    --color-code-bg: #f3f4f6;
+    /* 基础颜色 */
+    --color-bg-start: #F8FAFC;
+    --color-bg-end: #E2E8F0;
+    --color-text: #1E293B;
+    --color-secondary: #64748B;
+    --color-sidebar-bg: #F1F5F9;
+    --color-sidebar-bg-dim: #E8EEF5;
+    --color-border: #E2E8F0;
+
+    /* 渐变定义 */
+    --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+    --gradient-secondary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+    --gradient-code: linear-gradient(180deg, #F1F5F9 0%, #E0E7FF 100%);
+    --gradient-border: linear-gradient(90deg, #3B82F6, #8B5CF6, #EC4899);
+
+    /* 渐变起始/结束色（用于渐变文字和其他） */
+    --gradient-primary-start: #3B82F6;
+    --gradient-primary-end: #8B5CF6;
+    --gradient-secondary-start: #6366F1;
+    --gradient-secondary-end: #8B5CF6;
+    --gradient-code-start: #F1F5F9;
+    --gradient-code-end: #E0E7FF;
+
+    /* 阴影 */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+    --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
+
+    /* 动效曲线 */
+    --ease-spring: cubic-bezier(0.34, 1.26, 0.64, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    --color-bg: #111827;
-    --color-text: #f3f4f6;
-    --color-sidebar-bg: #1f2937;
-    --color-border: #374151;
-    --color-primary: #3b82f6;
-    --color-code-bg: #1f2937;
+    --color-bg-start: #0F172A;
+    --color-bg-end: #1E1B4B;
+    --color-text: #F1F5F9;
+    --color-secondary: #94A3B8;
+    --color-sidebar-bg: #1E293B;
+    --color-sidebar-bg-dim: #0F172A;
+    --color-border: #334155;
+
+    /* 暗模式渐变变量 */
+    --gradient-primary: linear-gradient(135deg, #60A5FA 0%, #A78BFA 100%);
+    --gradient-secondary: linear-gradient(135deg, #818CF8 0%, #C084FC 100%);
+    --gradient-code: linear-gradient(180deg, #1E293B 0%, #312E81 100%);
+    --gradient-border: linear-gradient(90deg, #60A5FA, #A78BFA, #F472B6);
+
+    /* 暗模式渐变起始/结束色 */
+    --gradient-primary-start: #60A5FA;
+    --gradient-primary-end: #A78BFA;
+    --gradient-secondary-start: #818CF8;
+    --gradient-secondary-end: #C084FC;
+    --gradient-code-start: #1E293B;
+    --gradient-code-end: #312E81;
+
+    --shadow-glow: 0 0 20px rgba(96, 165, 250, 0.3);
   }
 
   html {
-    background-color: var(--color-bg);
+    background-color: var(--color-bg-start);
     color: var(--color-text);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  /* Better focus states for accessibility */
+  *:focus-visible {
+    outline: 2px solid var(--color-primary-start);
+    outline-offset: 2px;
+  }
+
+  /* Improved cursor for interactive elements */
+  button, a, [role="button"] {
+    cursor: pointer;
   }
 }
 
+/* Mermaid diagram styling */
 .mermaid svg {
   max-width: 100%;
   height: auto;
+}
+
+/* Prose customization for better typography */
+.prose {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  line-height: 1.75;
+}
+
+.prose code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875em;
+  color: var(--gradient-primary-start);
+}
+
+.prose pre {
+  position: relative;
+  background: var(--color-code-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* 代码块顶部渐变装饰条 */
+.prose pre::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  border-radius: 8px 8px 0 0;
+}
+
+/* 标题渐变文字效果 */
+.prose-headings:text-gradient {
+  color: var(--gradient-secondary-start); /* Fallback */
+  background: var(--gradient-secondary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Smooth scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-sidebar-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+/* 背景渐变类 */
+.sidebar-gradient-bg {
+  background: linear-gradient(180deg, var(--color-sidebar-bg) 0%, var(--color-sidebar-bg-dim) 100%);
+}
+
+.main-gradient-bg {
+  background: linear-gradient(180deg, var(--color-bg-start) 0%, var(--color-bg-end) 100%);
+}
+
+/* 导航栏渐变边框 */
+.navbar-gradient-border {
+  position: relative;
+}
+
+.navbar-gradient-border::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-border);
+  transition: opacity 0.3s;
+}
+
+/* 侧边栏激活链接渐变边框 */
+.sidebar-active-link {
+  position: relative;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--color-text);
+}
+
+.sidebar-active-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: var(--gradient-primary);
+  z-index: -1;
+}
+
+/* 分区标题渐变文字 */
+.gradient-text {
+  color: var(--gradient-secondary-start); /* Fallback */
+  background: var(--gradient-secondary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* 链接下划线动画 */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.2s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* 动画关键帧 */
+@keyframes fade-in-down {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* 动画工具类 */
+.animate-fade-in-down {
+  animation: fade-in-down 300ms var(--ease-smooth) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 400ms var(--ease-smooth) forwards;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 400ms var(--ease-smooth) forwards;
+}
+
+/* 减少动效支持 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

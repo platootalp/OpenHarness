@@ -31,11 +31,14 @@ const currentPath = slug ? `/docs/${slug}/` : '/docs/';
   currentPath={currentPath}
 >
   <div class="prose prose-slate dark:prose-invert max-w-none
-    prose-headings:font-semibold prose-headings:text-gray-900 dark:prose-headings:text-white
-    prose-a:text-blue-600 dark:prose-a:text-blue-400
-    prose-code:text-blue-700 dark:prose-code:text-blue-300
-    prose-pre:bg-gray-900 dark:prose-pre:bg-gray-800
+    prose-headings:font-semibold prose-headings:text-[var(--color-text)] dark:prose-headings:text-[var(--color-text)]
+    prose-headings:font-['JetBrains_Mono']
+    prose-a:text-[var(--color-cta)] dark:prose-a:text-[var(--color-cta)] prose-a:no-underline hover:prose-a:underline
+    prose-code:text-[var(--color-cta)] dark:prose-code:text-[var(--color-cta)]
+    prose-pre:bg-[var(--color-code-bg)] dark:prose-pre:bg-[var(--color-code-bg)]
     prose-img:rounded-lg
+    prose-strong:text-[var(--color-text)] dark:prose-strong:text-[var(--color-text)]
+    prose-p:text-[var(--color-text)] dark:prose-p:text-[var(--color-text)]
   ">
     <Content components={{ ImageGenIsland: ImageGenIsland as any }} />
   </div>
