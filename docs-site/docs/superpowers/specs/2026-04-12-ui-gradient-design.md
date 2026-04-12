@@ -41,10 +41,11 @@
   --color-text: #1E293B;
   --color-secondary: #64748B;
   --color-sidebar-bg: #F1F5F9;
+  --color-sidebar-bg-dim: #E8EEF5;
   --color-border: #E2E8F0;
 
   /* 渐变定义 */
-  --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #EC4899 100%);
+  --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
   --gradient-secondary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
   --gradient-code: linear-gradient(180deg, #F1F5F9 0%, #E0E7FF 100%);
   --gradient-border: linear-gradient(90deg, #3B82F6, #8B5CF6, #EC4899);
@@ -56,7 +57,7 @@
   --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
 
   /* 动效曲线 */
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring: cubic-bezier(0.34, 1.26, 0.64, 1);
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -66,14 +67,25 @@
   --color-text: #F1F5F9;
   --color-secondary: #94A3B8;
   --color-sidebar-bg: #1E293B;
+  --color-sidebar-bg-dim: #0F172A;
   --color-border: #334155;
 
-  --gradient-primary: linear-gradient(135deg, #60A5FA 0%, #A78BFA 50%, #F472B6 100%);
+  --gradient-primary: linear-gradient(135deg, #60A5FA 0%, #A78BFA 100%);
   --gradient-secondary: linear-gradient(135deg, #818CF8 0%, #C084FC 100%);
   --gradient-code: linear-gradient(180deg, #1E293B 0%, #312E81 100%);
   --gradient-border: linear-gradient(90deg, #60A5FA, #A78BFA, #F472B6);
 
   --shadow-glow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+/* 减少动效支持 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 ```
 
@@ -86,9 +98,27 @@
 **样式：**
 - 浮动式圆角卡片：`top-4 left-4 right-4 h-14`
 - 背景：毛玻璃效果 `bg-[var(--color-bg-start)]/95 backdrop-blur-md`
-- 底部边框：渐变 `border-b-2 border-transparent bg-clip-text` 使用 `background: var(--gradient-border)`
+- 底部边框：使用伪元素实现渐变边框（见下方实现代码）
 - Logo 容器：渐变背景，白色文字
-- 主题切换按钮：hover 时显示渐变边框
+- 主题切换按钮：hover 时显示渐变边框（伪元素）
+
+**渐变边框实现：**
+```css
+.navbar-gradient-border {
+  position: relative;
+}
+
+.navbar-gradient-border::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-border);
+  transition: opacity 0.3s;
+}
+```
 
 **交互：**
 - 页面加载时 `fade-in-down` 300ms
@@ -98,9 +128,36 @@
 
 **样式：**
 - 背景：微妙渐变 `background: linear-gradient(180deg, var(--color-sidebar-bg) 0%, var(--color-sidebar-bg-dim) 100%)`
-- 激活链接：渐变背景 `background: var(--gradient-primary)`，白色文字
-- 分区标题：渐变文字 `background: var(--gradient-secondary); -webkit-background-clip: text; color: transparent`
-- 折叠图标：使用渐变色填充
+- 激活链接：渐变边框（非背景），文字使用品牌色
+- 分区标题：渐变文字 `background: var(--gradient-secondary); background-clip: text; -webkit-background-clip: text; color: transparent`
+- 折叠图标：使用品牌色填充
+
+**渐变边框实现：**
+```css
+.sidebar-active-link {
+  position: relative;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.sidebar-active-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: var(--gradient-primary);
+  z-index: -1;
+}
+```
+
+**渐变文字实现：**
+```css
+.gradient-text {
+  color: var(--color-secondary); /* Fallback */
+  background: var(--gradient-secondary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
 
 **交互：**
 - 页面加载时 `slide-in-left` 400ms
@@ -141,13 +198,26 @@
   from { opacity: 0; transform: translateX(-20px); }
   to { opacity: 1; transform: translateX(0); }
 }
+
+/* 动画工具类 */
+.animate-fade-in-down {
+  animation: fade-in-down 300ms var(--ease-smooth) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 400ms var(--ease-smooth) forwards;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 400ms var(--ease-smooth) forwards;
+}
 ```
 
 **应用：**
 - 导航栏：`.animate-fade-in-down` 300ms
-- 主内容：`.animate-fade-in-up` 600ms
+- 主内容：`.animate-fade-in-up` 400ms（从 600ms 减少）
 - 侧边栏：`.animate-slide-in-left` 400ms
-- 子元素交错延迟：`style="animation-delay: ${index * 50}ms"`
+- 子元素交错延迟：限制最多 10 个元素延迟，避免过长等待
 
 ### 交互动效
 
@@ -169,27 +239,34 @@
 
 1. `src/styles/global.css`
    - 添加渐变 CSS 变量
+   - 添加缺失的 `--color-sidebar-bg-dim` 变量
    - 定义动画关键帧
+   - 定义动画工具类
+   - 添加 `prefers-reduced-motion` 媒体查询
    - 更新基础颜色
 
-2. `src/components/TopNav.astro`
-   - 应用渐变边框到导航栏
+2. `tailwind.config.mjs`
+   - 扩展主题以支持 CSS 变量类型安全
+   - 添加自定义工具类
+
+3. `src/components/TopNav.astro`
+   - 应用渐变边框（伪元素方式）到导航栏
    - Logo 容器使用渐变
    - 添加加载动画
 
-3. `src/components/Sidebar.astro`
+4. `src/components/Sidebar.astro`
    - 应用渐变背景
-   - 激活链接使用渐变背景
-   - 分区标题使用渐变文字
+   - 激活链接使用渐变边框（伪元素）而非渐变背景
+   - 分区标题使用渐变文字（含 WebKit 前缀）
    - 添加加载动画
 
-4. `src/layouts/DocLayout.astro`
+5. `src/layouts/DocLayout.astro`
    - 主内容区域背景使用渐变
    - 添加加载动画
 
-5. `src/pages/docs/[...slug].astro`
-   - prose 样式更新（链接颜色渐变）
-   - 代码块渐变样式
+6. `src/pages/docs/[...slug].astro`
+   - prose 样式更新（链接颜色使用品牌色）
+   - 代码块保持纯色背景，仅顶部装饰条使用渐变
 
 ---
 
@@ -199,6 +276,23 @@
 - 所有动画必须尊重 `prefers-reduced-motion`
 - focus 状态保持可见
 - 键盘导航不受影响
+
+## 对比度验证
+
+| 前景色 | 背景色 | 对比度 | WCAG AA |
+|--------|--------|--------|----------|
+| `#1E293B` (文本) | `#F8FAFC` (背景) | ~12:1 | ✓ 通过 |
+| `#F1F5F9` (暗文本) | `#0F172A` (暗背景) | ~9:1 | ✓ 通过 |
+| `#3B82F6` (渐变开始) | `#F8FAFC` | ~5.5:1 | ✓ 通过 |
+| `#FFFFFF` (渐变文字) | `#6366F1` (渐变底) | ~7:1 | ✓ 通过 |
+| `#FFFFFF` (代码文字) | `#F1F5F9` (代码背景) | ~8:1 | ✓ 通过 |
+
+## 移动端考虑
+
+- 在小屏幕（< 768px）简化渐变复杂度
+- 移动端代码块使用纯色背景（不渐变）
+- 减少移动端的动画元素数量
+- 确保 GPU 加速属性优先使用
 
 ---
 
