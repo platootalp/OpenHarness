@@ -35,7 +35,7 @@
 
 ### 2. Logo 容器使用渐变背景
 ```html
-<div class="w-8 h-8 text-white font-bold text-sm shadow-[var(--shadow-sm)]" style="background: var(--gradient-primary)">OH</div>
+<div class="w-8 h-8 rounded text-white font-bold text-sm shadow-[var(--shadow-sm)]" style="background: var(--gradient-primary)">OH</div>
 ```
 
 ### 3. 添加页面加载动画
@@ -47,7 +47,7 @@
 ### 4. 优化链接 hover 效果
 链接 hover 时显示下划线动画：
 ```html
-<a class="... nav-link">Home</a>
+<a class="text-sm ... nav-link">Home</a>
 ```
 ```css
 .nav-link {
@@ -71,9 +71,9 @@
 ```
 
 ### 5. 主题切换按钮优化
-hover 时显示渐变边框，添加渐变类：
+hover 时显示渐变边框，使用品牌色：
 ```html
-<button class="... theme-btn" style="background: var(--gradient-primary)">
+<button class="p-2 rounded-lg transition-all duration-200 ... theme-btn" style="color: var(--gradient-primary-start)">
 ```
 
 ## 验收标准
@@ -81,6 +81,6 @@ hover 时显示渐变边框，添加渐变类：
 - [ ] Logo 容器使用渐变背景
 - [ ] 页面加载有淡入动画
 - [ ] 链接 hover 有下划线动画
-- [ ] 主题切换按钮 hover 有渐变效果
+- [ ] 主题切换按钮使用品牌色
 - [ ] 亮/暗模式都正确显示
 - [ ] 响应式在移动端正常工作

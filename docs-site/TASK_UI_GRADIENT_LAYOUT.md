@@ -12,6 +12,7 @@
 ## 具体实现
 
 ### 1. 主内容区域背景使用渐变
+添加 `main-gradient-bg` 类到 body（该类已在 TASK_UI_GRADIENT_CSS_SYSTEM 中定义）：
 ```html
 <body class="... main-gradient-bg">
 ```
@@ -22,7 +23,7 @@
 ```
 
 ### 2. 添加页面加载动画
-给主内容区域添加 `animate-fade-in-up` 类：
+给主内容区域添加 `animate-fade-in-up` 类（注意：对 main 元素添加）：
 ```html
 <main class="... animate-fade-in-up">
 ```

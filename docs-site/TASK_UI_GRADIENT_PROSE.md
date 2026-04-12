@@ -8,12 +8,28 @@
 
 ## 修改文件
 - `src/pages/docs/[...slug].astro`
+`src/styles/global.css`（添加自定义 CSS）
 
 ## 具体实现
 
 ### 1. 链接使用品牌渐变色
+使用渐变起始色 `#3B82F6`（亮模式）或 `#60A5FA`（（暗模式）：
 ```html
-prose-a:text-[var(--gradient-primary-start)] dark:prose-a:text-[var(--gradient-primary-start)]
+prose-a:text-[#3B82F6] dark:prose-a:text-[#60A5FA]
+```
+或使用 CSS 变量（需要在 CSS 系统任务中定义 `--gradient-primary-start`）：
+```css
+:root {
+  --gradient-primary-start: #3B82F6;
+}
+
+.dark {
+  --gradient-primary-start: #60A5FA;
+}
+```
+然后在 prose 类中使用：
+```html
+prose-a:text-[var(--gradient-primary-start)]
 ```
 
 ### 2. 代码块保持纯色背景，顶部装饰条使用渐变
@@ -26,7 +42,7 @@ prose-a:text-[var(--gradient-primary-start)] dark:prose-a:text-[var(--gradient-p
 
 .prose pre::before {
   content: '';
-  position: absolute;
+  position:: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -37,17 +53,19 @@ prose-a:text-[var(--gradient-primary-start)] dark:prose-a:text-[var(--gradient-p
 ```
 
 ### 3. 标题使用渐变文字效果
-```html
-prose-headings:text-gradient
-```
+在 `src/styles/global.css` 中定义：
 ```css
-.text-gradient {
+.prose-headings\:text-gradient {
   color: var(--color-secondary); /* Fallback */
   background: var(--gradient-secondary);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 }
+```
+然后在 prose 类中使用：
+```html
+prose-headings:font-['JetBrains_Mono'] prose-headings:text-gradient
 ```
 
 ### 4. 移动端优化

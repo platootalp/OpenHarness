@@ -25,14 +25,14 @@
 使用伪元素实现渐变边框效果（而非渐变背景，保持可读性）：
 ```html
 <a class="... sidebar-active-link">
-  <span>{node.label}</span>
+  <span class="sidebar-active-text">{node.label}</span>
 </a>
 ```
 ```css
 .sidebar-active-link {
   position: relative;
   background: rgba(59, 130, 246, 0.1);
-  color: var(--gradient-primary-start);
+  color: var(--color-text);
 }
 
 .sidebar-active-link::after {
@@ -71,6 +71,7 @@
 ```html
 <svg class="..." style="color: var(--gradient-primary-start)">
 ```
+使用 `#3B82F6`（渐变起始色）或直接使用 `var(--gradient-primary-start)` 变量
 
 ## 验收标准
 - [ ] 侧边栏背景有垂直渐变

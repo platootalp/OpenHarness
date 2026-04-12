@@ -73,7 +73,32 @@
 }
 ```
 
-### 5. 添加减少动效媒体查询
+### 5. 添加动效曲线变量
+```css
+:root {
+  /* 动效曲线 */
+  --ease-spring: cubic-bezier(0.34, 1.26, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark {
+  /* 动效曲线在暗模式下相同 */
+}
+```
+
+### 6. 添加阴影变量
+```css
+:root {
+  /* 阴影 */
+  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.dark {
+  --shadow-glow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+```
+
+### 7. 添加减少动效媒体查询
 ```css
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -92,4 +117,6 @@
 - [ ] 动画工具类正确引用关键帧
 - [ ] prefers-reduced-motion 媒体查询正确定义
 - [ ] 所有变量都有亮/暗模式变体
+- [ ] 动效曲线变量已定义
+- [ ] 阴影变量已定义
 - [ ] CSS 在亮/暗模式下都能正常工作

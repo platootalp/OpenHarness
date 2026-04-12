@@ -16,7 +16,7 @@
 ## 测试场景
 
 ### 1. 亮模式验证
-- [ ] 导航栏渐变边框正确显示
+- [ ] 导航栏渐变边框框正确显示
 - [ ] Logo 渐变背景正确
 - [ ] 侧边栏渐变背景正确
 - [ ] 激活链接渐变边框正确
@@ -59,9 +59,51 @@
 - [ ] 屏幕阅读器正确读出内容
 
 ## 测试工具
-- Playwright E2E 测试
-- 手动视觉检查（亮/暗模式）
-- 对比度检查工具（WebAIM Contrast Checker）
+
+### Playwright E2E 测试
+创建 `tests/ui-gradient.spec.ts` 文件：
+```typescript
+import { test, expect } from '@playwright/test';
+
+test.describe('UI Gradient Effects', () => {
+  test('亮模式渐变显示', async ({ page }) => {
+    await page.goto('/docs/');
+    await page.evaluate(() => {
+      document.documentElement.classList.remove('dark');
+    });
+    // 验证导航栏渐变边框存在
+    const navbar = await page.locator('header').first();
+    await expect(navbar).toHaveClass(/gradient-border/);
+  });
+
+  test('暗模式渐变显示', async ({ page }) => {
+    await page.goto('/docs/');
+    await page.evaluate(() => {
+      document.documentElement.classList.add('dark');
+    });
+    // 验证暗模式渐变效果
+  });
+
+  test('主题切换流畅', async ({ page }) => {
+    await page.goto('/docs/');
+    const before = await page.locator('header').screenshot();
+    await page.click('#theme-toggle-btn');
+    await page.waitForTimeout(100);
+    const after = await page.locator('header').screenshot();
+    // 对比截图确保平滑切换
+  });
+});
+```
+
+运行测试：
+```bash
+npx playwright test
+```
+
+### 手动视觉检查
+1. 在亮模式和暗模式下检查所有渐变效果
+2. 使用 WebAIM Contrast Checker 验证颜色对比度
+3. 检查动画流畅性
 
 ## 验收标准
 - [ ] 所有测试场景通过
