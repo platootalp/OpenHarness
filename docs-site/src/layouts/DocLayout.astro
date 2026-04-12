@@ -242,13 +242,13 @@ const { title = 'OpenHarness Docs', description, section = '', currentPath = '' 
           var chevron = btn.querySelector('.sidebar-chevron');
           if (!content) return;
 
-          var isOpen = !content.classList.contains('hidden');
+          var isOpen = content.classList.contains('is-open');
           if (isOpen) {
-            content.classList.add('hidden');
+            content.classList.remove('is-open');
             if (chevron) chevron.style.transform = 'rotate(-90deg)';
             btn.setAttribute('aria-expanded', 'false');
           } else {
-            content.classList.remove('hidden');
+            content.classList.add('is-open');
             if (chevron) chevron.style.transform = '';
             btn.setAttribute('aria-expanded', 'true');
           }
