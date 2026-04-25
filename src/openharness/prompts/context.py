@@ -12,7 +12,6 @@ from openharness.config.paths import (
 )
 from openharness.config.settings import Settings
 from openharness.coordinator.coordinator_mode import get_coordinator_system_prompt, is_coordinator_mode
-from openharness.memory import find_relevant_memories, load_memory_prompt
 from openharness.personalization.rules import load_local_rules
 from openharness.prompts.claudemd import load_claude_md_prompt
 from openharness.prompts.system_prompt import build_system_prompt
@@ -76,6 +75,7 @@ def build_runtime_system_prompt(
     *,
     cwd: str | Path,
     latest_user_prompt: str | None = None,
+    relevant_memories: list | None = None,
     extra_skill_dirs: Iterable[str | Path] | None = None,
     extra_plugin_roots: Iterable[str | Path] | None = None,
 ) -> str:
@@ -131,32 +131,29 @@ def build_runtime_system_prompt(
                 sections.append(f"# {title}\n\n```md\n{content[:12000]}\n```")
 
     if settings.memory.enabled:
-        memory_section = load_memory_prompt(
-            cwd,
-            max_entrypoint_lines=settings.memory.max_entrypoint_lines,
+        from openharness.memory.registry import get_backend
+        from openharness.memory.base import MemoryEntry
+
+        backend = get_backend(settings, cwd=cwd)
+        memory_section = backend.load_prompt_section(
+            max_lines=settings.memory.max_entrypoint_lines,
         )
         if memory_section:
             sections.append(memory_section)
 
-        if latest_user_prompt:
-            relevant = find_relevant_memories(
-                latest_user_prompt,
-                cwd,
-                max_results=settings.memory.max_files,
-            )
-            if relevant:
-                lines = ["# Relevant Memories"]
-                for header in relevant:
-                    content = header.path.read_text(encoding="utf-8", errors="replace").strip()
+        if relevant_memories:
+            lines = ["# Relevant Memories"]
+            for entry in relevant_memories:
+                if isinstance(entry, MemoryEntry):
                     lines.extend(
                         [
                             "",
-                            f"## {header.path.name}",
+                            f"## {entry.title or entry.id}",
                             "```md",
-                            content[:8000],
+                            entry.content[:8000],
                             "```",
                         ]
                     )
-                sections.append("\n".join(lines))
+            sections.append("\n".join(lines))
 
     return "\n\n".join(section for section in sections if section.strip())
