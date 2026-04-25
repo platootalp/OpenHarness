@@ -57,14 +57,31 @@ class PermissionSettings(BaseModel):
     denied_commands: list[str] = Field(default_factory=list)
 
 
+class Mem0Settings(BaseModel):
+    """mem0-specific configuration."""
+
+    storage: str = "local"  # "local" | "cloud" | "server"
+    vector_store: str = "chroma"  # "chroma" | "qdrant"
+    embedder: str = "openai"  # Embedding model provider (requires corresponding API key)
+    embedder_model: str = "text-embedding-3-small"
+    api_key: str | None = None  # For cloud/server mode
+    base_url: str | None = None  # For self-hosted server
+    auto_extract: bool = True
+    extract_user_id: str = "default"  # mem0 user_id for memory scoping
+    extract_every_n_messages: int = 5  # Extract every N user-assistant turns
+    extract_every_seconds: float = 300.0  # Or every 5 minutes, whichever comes first
+
+
 class MemorySettings(BaseModel):
     """Memory system configuration."""
 
     enabled: bool = True
+    backend: str = "markdown"  # "markdown" | "mem0"
     max_files: int = 5
     max_entrypoint_lines: int = 200
     context_window_tokens: int | None = None
     auto_compact_threshold_tokens: int | None = None
+    mem0: Mem0Settings = Field(default_factory=Mem0Settings)
 
 
 class SandboxNetworkSettings(BaseModel):
@@ -835,6 +852,16 @@ def _apply_env_overrides(settings: Settings) -> Settings:
         )
     if sandbox_updates:
         updates["sandbox"] = settings.sandbox.model_copy(update=sandbox_updates)
+
+    # --- memory backend ---
+    memory_backend = os.environ.get("OH_MEMORY_BACKEND")
+    if memory_backend:
+        memory_updates: dict[str, Any] = {}
+        memory_updates["backend"] = memory_backend
+        if "memory" not in updates:
+            updates["memory"] = settings.memory.model_copy(update=memory_updates)
+        else:
+            updates["memory"] = updates["memory"].model_copy(update=memory_updates)
 
     if not updates:
         return settings
