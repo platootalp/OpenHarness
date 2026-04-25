@@ -259,6 +259,16 @@ async def test_backend_host_command_does_not_reset_cli_overrides(tmp_path, monke
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OPENHARNESS_CONFIG_DIR", str(tmp_path / "config"))
     monkeypatch.setenv("OPENHARNESS_DATA_DIR", str(tmp_path / "data"))
+    # Clear env vars that would override settings via _apply_env_overrides,
+    # so the CLI args to build_runtime take effect.
+    monkeypatch.delenv("ANTHROPIC_BASE_URL", raising=False)
+    monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_BASE_URL", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("OPENHARNESS_BASE_URL", raising=False)
+    monkeypatch.delenv("OPENHARNESS_MODEL", raising=False)
+    monkeypatch.delenv("OPENHARNESS_PROVIDER", raising=False)
 
     host = ReactBackendHost(BackendHostConfig(api_client=StaticApiClient("unused")))
     host._bundle = await build_runtime(

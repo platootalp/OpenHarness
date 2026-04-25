@@ -176,6 +176,15 @@ async def test_model_command_persists(tmp_path: Path, monkeypatch):
 @pytest.mark.asyncio
 async def test_model_command_accepts_direct_value(tmp_path: Path, monkeypatch):
     monkeypatch.setenv("OPENHARNESS_CONFIG_DIR", str(tmp_path / "config"))
+    # Clear env vars that would override settings via _apply_env_overrides
+    monkeypatch.delenv("ANTHROPIC_BASE_URL", raising=False)
+    monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_BASE_URL", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("OPENHARNESS_BASE_URL", raising=False)
+    monkeypatch.delenv("OPENHARNESS_MODEL", raising=False)
+    monkeypatch.delenv("OPENHARNESS_PROVIDER", raising=False)
     registry = create_default_command_registry()
     command, args = registry.lookup("/model gpt-5.4")
     assert command is not None
@@ -189,6 +198,15 @@ async def test_model_command_accepts_direct_value(tmp_path: Path, monkeypatch):
 @pytest.mark.asyncio
 async def test_model_command_default_clears_profile_override(tmp_path: Path, monkeypatch):
     monkeypatch.setenv("OPENHARNESS_CONFIG_DIR", str(tmp_path / "config"))
+    # Clear env vars that would override settings via _apply_env_overrides
+    monkeypatch.delenv("ANTHROPIC_BASE_URL", raising=False)
+    monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_BASE_URL", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("OPENHARNESS_BASE_URL", raising=False)
+    monkeypatch.delenv("OPENHARNESS_MODEL", raising=False)
+    monkeypatch.delenv("OPENHARNESS_PROVIDER", raising=False)
     save_settings(
         Settings().model_copy(
             update={

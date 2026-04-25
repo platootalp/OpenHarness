@@ -442,6 +442,15 @@ def test_cli_provider_use_activates_codex_profile(monkeypatch, tmp_path: Path):
     )
     monkeypatch.setenv("OPENHARNESS_CONFIG_DIR", str(config_dir))
     monkeypatch.setenv("CODEX_HOME", str(codex_home))
+    # Clear env vars that would override settings via _apply_env_overrides
+    monkeypatch.delenv("ANTHROPIC_BASE_URL", raising=False)
+    monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_BASE_URL", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("OPENHARNESS_BASE_URL", raising=False)
+    monkeypatch.delenv("OPENHARNESS_MODEL", raising=False)
+    monkeypatch.delenv("OPENHARNESS_PROVIDER", raising=False)
 
     runner = CliRunner()
     assert runner.invoke(app, ["auth", "codex-login"]).exit_code == 0
