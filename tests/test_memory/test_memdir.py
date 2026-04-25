@@ -10,7 +10,7 @@ from openharness.memory import (
     get_project_memory_dir,
     load_memory_prompt,
 )
-from openharness.memory.scan import _parse_memory_file, scan_memory_files
+from openharness.memory.markdown.scan import _parse_memory_file, scan_memory_files
 
 
 def test_memory_paths_are_stable(tmp_path: Path, monkeypatch):

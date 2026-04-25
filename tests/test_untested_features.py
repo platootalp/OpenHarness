@@ -339,20 +339,20 @@ Build and deploy the app to production.
 # ====================================================================
 async def test_memory_lifecycle():
     """Test full memory lifecycle: add → list → search → remove."""
-    from openharness.memory.manager import list_memory_files, add_memory_entry, remove_memory_entry
-    from openharness.memory.search import find_relevant_memories
-    from openharness.memory.scan import scan_memory_files
+    from openharness.memory.markdown.manager import list_memory_files, add_memory_entry, remove_memory_entry
+    from openharness.memory.markdown.search import find_relevant_memories
+    from openharness.memory.markdown.scan import scan_memory_files
 
     with tempfile.TemporaryDirectory() as tmpdir:
         # Monkey-patch memory dir
-        import openharness.memory.paths as mp
+        import openharness.memory.markdown.paths as mp
         orig = mp.get_project_memory_dir
         mem_dir = Path(tmpdir) / ".openharness" / "memory"
         mem_dir.mkdir(parents=True, exist_ok=True)
         mp.get_project_memory_dir = lambda cwd: mem_dir
 
         # Also patch entrypoint
-        import openharness.memory.manager as mm
+        import openharness.memory.markdown.manager as mm
         orig_ep = mm.get_memory_entrypoint
         mm.get_memory_entrypoint = lambda cwd: mem_dir / "MEMORY.md"
 

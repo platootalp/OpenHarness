@@ -301,10 +301,10 @@ async def task_migration_plan_with_memory():
     from openharness.coordinator.agent_definitions import get_agent_definition
     from openharness.skills.registry import SkillRegistry
     from openharness.skills.types import SkillDefinition
-    from openharness.memory.manager import add_memory_entry, list_memory_files, remove_memory_entry
+    from openharness.memory.markdown.manager import add_memory_entry, list_memory_files, remove_memory_entry
     from openharness.services.session_storage import save_session_snapshot, export_session_markdown
-    import openharness.memory.paths as mp
-    import openharness.memory.manager as mm
+    import openharness.memory.markdown.paths as mp
+    import openharness.memory.markdown.manager as mm
 
     with tempfile.TemporaryDirectory() as tmpdir:
         mem_dir = Path(tmpdir) / "memory"

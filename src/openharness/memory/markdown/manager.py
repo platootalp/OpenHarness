@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from re import sub
 
-from openharness.memory.paths import get_memory_entrypoint, get_project_memory_dir
+from openharness.memory.markdown.paths import get_memory_entrypoint, get_project_memory_dir
 from openharness.utils.file_lock import exclusive_file_lock
 from openharness.utils.fs import atomic_write_text
 

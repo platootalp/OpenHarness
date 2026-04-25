@@ -155,11 +155,11 @@ async def task_memory_research_autoagent():
     print("  Task 2: PR#12 — Research AutoAgent → save to memory → search → use")
     print("=" * 70)
 
-    from openharness.memory.search import find_relevant_memories
-    from openharness.memory.scan import scan_memory_files
-    import openharness.memory.paths as mp
-    import openharness.memory.manager as mm
-    import openharness.memory.scan as ms
+    from openharness.memory.markdown.search import find_relevant_memories
+    from openharness.memory.markdown.scan import scan_memory_files
+    import openharness.memory.markdown.paths as mp
+    import openharness.memory.markdown.manager as mm
+    import openharness.memory.markdown.scan as ms
 
     with tempfile.TemporaryDirectory() as tmpdir:
         mem_dir = Path(tmpdir) / "memory"
@@ -503,14 +503,14 @@ async def task_full_dev_workflow():
     print("=" * 70)
 
     from openharness.tools.skill_tool import SkillTool
-    from openharness.memory.scan import scan_memory_files
-    from openharness.memory.search import find_relevant_memories
+    from openharness.memory.markdown.scan import scan_memory_files
+    from openharness.memory.markdown.search import find_relevant_memories
     from openharness.services.session_storage import save_session_snapshot, load_session_snapshot
     from openharness.services.cron import upsert_cron_job, load_cron_jobs, validate_cron_expression
     from openharness.engine.messages import ConversationMessage
-    import openharness.memory.paths as mp
-    import openharness.memory.manager as mm
-    import openharness.memory.scan as ms
+    import openharness.memory.markdown.paths as mp
+    import openharness.memory.markdown.manager as mm
+    import openharness.memory.markdown.scan as ms
     import openharness.services.cron as cron_mod
 
     with tempfile.TemporaryDirectory() as tmpdir:
