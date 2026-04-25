@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 
 from openharness.state.app_state import AppState
 from openharness.bridge.manager import BridgeSessionRecord
-from openharness.mcp.types import McpConnectionStatus
+from openharness.mcp_runtime.types import McpConnectionStatus
 from openharness.tasks.types import TaskRecord
 
 

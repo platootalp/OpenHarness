@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-from openharness.mcp.client import McpClientManager, McpServerNotConnectedError
+from openharness.mcp_runtime.client import McpClientManager, McpServerNotConnectedError
 from openharness.tools.base import BaseTool, ToolExecutionContext, ToolResult
 
 

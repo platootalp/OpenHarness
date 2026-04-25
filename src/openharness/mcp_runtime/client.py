@@ -13,7 +13,7 @@ from mcp.client.stdio import stdio_client
 from mcp.client.streamable_http import streamable_http_client
 from mcp.types import CallToolResult, ReadResourceResult
 
-from openharness.mcp.types import (
+from openharness.mcp_runtime.types import (
     McpConnectionStatus,
     McpHttpServerConfig,
     McpResourceInfo,

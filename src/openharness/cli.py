@@ -783,7 +783,7 @@ app.add_typer(autopilot_app)
 def mcp_list() -> None:
     """List configured MCP servers."""
     from openharness.config import load_settings
-    from openharness.mcp.config import load_mcp_server_configs
+    from openharness.mcp_runtime.config import load_mcp_server_configs
     from openharness.plugins import load_plugins
 
     settings = load_settings()
@@ -2230,6 +2230,12 @@ def main(
         help="Run the structured backend host for the React terminal UI",
         hidden=True,
     ),
+    debug_port: int = typer.Option(
+        0,
+        "--debug-port",
+        help="Listen on this port for debugpy connection (0 = disabled)",
+        hidden=True,
+    ),
     task_worker: bool = typer.Option(
         False,
         "--task-worker",
@@ -2361,6 +2367,7 @@ def main(
                 restore_tool_metadata=session_data.get("tool_metadata"),
                 permission_mode=permission_mode,
                 api_format=api_format,
+                debug_port=debug_port,
             )
         )
         return
@@ -2414,5 +2421,6 @@ def main(
             api_key=api_key,
             api_format=api_format,
             permission_mode=permission_mode,
+            debug_port=debug_port,
         )
     )

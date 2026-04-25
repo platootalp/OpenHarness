@@ -4,34 +4,33 @@ export function remarkMermaid() {
   let conversionCount = 0;
 
   return (tree) => {
+    console.log('[rehype-mermaid] Plugin called, tree type:', tree.type);
     visit(tree, (node, index, parent) => {
-      // Only process elements that are code with language-mermaid
       if (node.type !== 'element') return;
-      if (node.tagName !== 'code') return;
+      if (node.tagName !== 'pre') return;
 
-      const className = node.properties?.className;
-      const classArray = Array.isArray(className) ? className : [];
+      // Check data-language on pre element (set by Shiki)
+      const dataLang = node.properties?.dataLanguage;
+      if (dataLang !== 'mermaid') return;
 
-      // Find language class
-      const langClass = classArray.find((c) => c && c.startsWith('language-'));
-      const lang = langClass ? langClass.replace('language-', '') : '';
-
-      if (lang !== 'mermaid') return;
+      // Find code element inside pre
+      const codeNode = node.children?.find(child =>
+        child.type === 'element' && child.tagName === 'code'
+      );
+      if (!codeNode) return;
 
       // Extract text content
-      const textContent = extractText(node);
+      const textContent = extractText(codeNode);
+      if (!textContent.trim()) return;
 
-      // Replace <code class="language-mermaid">...</code> with <mermaid-block>
+      // Create mermaid-block element
       const mermaidElement = {
         type: 'element',
         tagName: 'mermaid-block',
-        properties: {
-          'data-definition': textContent,
-        },
+        properties: { 'data-definition': textContent },
         children: [],
       };
 
-      // Replace in parent
       if (parent && typeof index === 'number') {
         parent.children.splice(index, 1, mermaidElement);
         conversionCount++;
@@ -39,17 +38,14 @@ export function remarkMermaid() {
     });
 
     if (conversionCount > 0) {
-      console.log(`[remark-mermaid] Converted ${conversionCount} mermaid code blocks`);
-    } else {
-      console.log('[remark-mermaid] No mermaid blocks found');
+      console.log(`[rehype-mermaid] Converted ${conversionCount} mermaid code blocks`);
     }
   };
 }
 
 function extractText(node) {
-  if (node.type === 'text') {
-    return node.value || '';
-  }
+  if (!node) return '';
+  if (node.type === 'text') return node.value || '';
   if (node.children && Array.isArray(node.children)) {
     return node.children.map(extractText).join('');
   }

@@ -14,7 +14,16 @@ class MermaidBlock extends HTMLElement {
       const isDark = document.documentElement.classList.contains('dark');
       mermaid.initialize({
         startOnLoad: false,
-        theme: isDark ? 'dark' : 'default',
+        theme: isDark ? 'base' : 'default',
+        themeVariables: isDark ? {
+          background: '#1a1f35',
+          primaryColor: '#3b82f6',
+          primaryTextColor: '#f1f5f9',
+          primaryBorderColor: '#60a5fa',
+          lineColor: '#94a3b8',
+          secondaryColor: '#1e293b',
+          tertiaryColor: '#0f172a',
+        } : {},
         securityLevel: 'loose',
         fontFamily: 'inherit',
       });
@@ -23,7 +32,7 @@ class MermaidBlock extends HTMLElement {
       const { svg } = await mermaid.render(id, definition);
 
       this.innerHTML = `
-        <div class="mermaid svg-container flex justify-center p-4 bg-white dark:bg-gray-900 rounded-lg overflow-x-auto">
+        <div class="mermaid svg-container flex justify-center p-4 rounded-lg overflow-x-auto">
           ${svg}
         </div>
       `;
@@ -53,7 +62,16 @@ class MermaidBlock extends HTMLElement {
       const isDark = document.documentElement.classList.contains('dark');
       mermaid.initialize({
         startOnLoad: false,
-        theme: isDark ? 'dark' : 'default',
+        theme: isDark ? 'base' : 'default',
+        themeVariables: isDark ? {
+          background: '#1a1f35',
+          primaryColor: '#3b82f6',
+          primaryTextColor: '#f1f5f9',
+          primaryBorderColor: '#60a5fa',
+          lineColor: '#94a3b8',
+          secondaryColor: '#1e293b',
+          tertiaryColor: '#0f172a',
+        } : {},
         securityLevel: 'loose',
         fontFamily: 'inherit',
       });

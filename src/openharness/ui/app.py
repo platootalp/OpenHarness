@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import sys
 
 from openharness.coordinator.coordinator_mode import (
@@ -221,8 +222,30 @@ async def run_repl(
     restore_messages: list[dict] | None = None,
     restore_tool_metadata: dict[str, object] | None = None,
     permission_mode: str | None = None,
+    debug_port: int = 0,
 ) -> None:
     """Run the default OpenHarness interactive application (React TUI)."""
+    # Enable debugpy if a debug port is specified.
+    # IMPORTANT: debugpy.listen() must be called from a non-asyncio thread.
+    # Calling it from the main asyncio thread causes the TCP server socket to
+    # not bind properly (macOS kqueue selector conflict). Spawn a plain
+    # daemon thread so the socket binds correctly.
+    if debug_port > 0:
+        import debugpy
+        import threading
+
+        log = logging.getLogger("openharness")
+
+        def _start_debugpy():
+            debugpy.listen(("localhost", debug_port))
+
+        t = threading.Thread(target=_start_debugpy, daemon=True)
+        t.start()
+        # Yield to the event loop briefly so the debug server can bind.
+        # Using asyncio.sleep so we don't block the loop.
+        await asyncio.sleep(0.3)
+        log.info("debugpy server started on port %d — PyCharm: Run → Attach to Process → port %d", debug_port, debug_port)
+        log.info("  (breakpoints only work AFTER PyCharm attaches)")
     if backend_only:
         await run_backend_host(
             cwd=cwd,

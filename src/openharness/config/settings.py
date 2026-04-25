@@ -19,7 +19,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from openharness.hooks.schemas import HookDefinition
-from openharness.mcp.types import McpServerConfig
+from openharness.mcp_runtime.types import McpServerConfig
 from openharness.permissions.modes import PermissionMode
 from openharness.utils.file_lock import exclusive_file_lock
 from openharness.utils.fs import atomic_write_text

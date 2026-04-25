@@ -2,6 +2,8 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
+import { remarkMermaid } from './src/lib/remark-mermaid.mjs';
+import { rehypeCallout } from './src/lib/rehype-callout.ts';
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,13 +13,18 @@ export default defineConfig({
   ],
   output: 'static',
   markdown: {
+    remarkPlugins: [],
+    rehypePlugins: [remarkMermaid, rehypeCallout],
     shikiConfig: {
-      theme: 'github-dark',
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark',
+      },
     },
   },
   vite: {
     optimizeDeps: {
-      include: ['mermaid'],
+      include: ['mermaid', 'react', 'react-dom', 'react-dom/client'],
     },
   },
 });

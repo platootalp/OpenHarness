@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-from openharness.mcp.client import McpClientManager
+from openharness.mcp_runtime.client import McpClientManager
 from openharness.tools.base import BaseTool, ToolExecutionContext, ToolResult
 
 

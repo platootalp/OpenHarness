@@ -6,8 +6,8 @@ import re
 
 from pydantic import BaseModel, Field, create_model
 
-from openharness.mcp.client import McpClientManager, McpServerNotConnectedError
-from openharness.mcp.types import McpToolInfo
+from openharness.mcp_runtime.client import McpClientManager, McpServerNotConnectedError
+from openharness.mcp_runtime.types import McpToolInfo
 from openharness.tools.base import BaseTool, ToolExecutionContext, ToolResult
 
 

@@ -22,3 +22,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# claude code
+.claude/
+
+# superpowers artifacts
+.superpowers/

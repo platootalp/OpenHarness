@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from openharness.coordinator.agent_definitions import AgentDefinition
-from openharness.mcp.types import McpServerConfig
+from openharness.mcp_runtime.types import McpServerConfig
 from openharness.plugins.schemas import PluginManifest
 from openharness.skills.types import SkillDefinition
 

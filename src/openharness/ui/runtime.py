@@ -27,8 +27,8 @@ from openharness.engine.query import MaxTurnsExceeded
 from openharness.engine.stream_events import StreamEvent
 from openharness.hooks import HookEvent, HookExecutionContext, HookExecutor, load_hook_registry
 from openharness.hooks.hot_reload import HookReloader
-from openharness.mcp.client import McpClientManager
-from openharness.mcp.config import load_mcp_server_configs
+from openharness.mcp_runtime.client import McpClientManager
+from openharness.mcp_runtime.config import load_mcp_server_configs
 from openharness.permissions import PermissionChecker
 from openharness.plugins import load_plugins
 from openharness.prompts import build_runtime_system_prompt
