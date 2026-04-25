@@ -37,6 +37,8 @@ from openharness.tools.task_stop_tool import TaskStopTool
 from openharness.tools.task_update_tool import TaskUpdateTool
 from openharness.tools.team_create_tool import TeamCreateTool
 from openharness.tools.team_delete_tool import TeamDeleteTool
+from openharness.tools.memory_search_tool import MemorySearchTool
+from openharness.tools.memory_add_tool import MemoryAddTool
 from openharness.tools.todo_write_tool import TodoWriteTool
 from openharness.tools.tool_search_tool import ToolSearchTool
 from openharness.tools.web_fetch_tool import WebFetchTool
@@ -84,6 +86,8 @@ def create_default_tool_registry(mcp_manager=None) -> ToolRegistry:
         SendMessageTool(),
         TeamCreateTool(),
         TeamDeleteTool(),
+        MemorySearchTool(),
+        MemoryAddTool(),
     ):
         registry.register(tool)
     if mcp_manager is not None:
