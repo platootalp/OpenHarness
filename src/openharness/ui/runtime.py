@@ -298,6 +298,7 @@ async def build_runtime(
         permission_prompt=permission_prompt,
         ask_user_prompt=ask_user_prompt,
         hook_executor=hook_executor,
+        settings=settings,
         tool_metadata={
             "mcp_manager": mcp_manager,
             "bridge_manager": bridge_manager,

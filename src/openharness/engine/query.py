@@ -6,7 +6,7 @@ import asyncio
 import logging
 import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, AsyncIterator, Awaitable, Callable
 
@@ -95,6 +95,10 @@ class QueryContext:
     max_turns: int | None = 200
     hook_executor: HookExecutor | None = None
     tool_metadata: dict[str, object] | None = None
+    memory_backend: "MemoryBackend | None" = None
+    memory_settings: object | None = None
+    _last_extract_at: float = field(default_factory=time.monotonic)
+    _messages_since_extract: int = 0
 
 
 def _append_capped_unique(bucket: list[Any], value: Any, *, limit: int) -> None:
@@ -452,6 +456,58 @@ def _record_tool_carryover(
         _remember_work_log(context.tool_metadata, entry="Exited plan mode")
 
 
+def _message_to_dict(m) -> dict:
+    """Convert a ConversationMessage to a dict for extract_and_store."""
+    if hasattr(m, "model_dump"):
+        return m.model_dump()
+    return {"role": getattr(m, "role", "unknown"), "content": str(m)}
+
+
+async def _maybe_extract_memories(context: QueryContext, messages: list) -> None:
+    """Check extraction triggers and run if threshold met."""
+    backend = context.memory_backend
+    if backend is None or context.memory_settings is None:
+        return
+    mem_settings = context.memory_settings.memory.mem0  # type: ignore[attr-defined]
+    if not mem_settings.auto_extract:
+        return
+    elapsed = time.monotonic() - context._last_extract_at
+    if backend.should_extract(
+        message_count=context._messages_since_extract,
+        elapsed_seconds=elapsed,
+        extract_every_n_messages=mem_settings.extract_every_n_messages,
+        extract_every_seconds=mem_settings.extract_every_seconds,
+    ):
+        try:
+            await backend.extract_and_store(
+                [_message_to_dict(m) for m in messages],
+            )
+        except Exception:
+            pass
+        context._last_extract_at = time.monotonic()
+        context._messages_since_extract = 0
+    else:
+        context._messages_since_extract += 1
+
+
+async def _extract_before_compact(context: QueryContext, messages: list) -> None:
+    """Safety net: extract memories before compaction to preserve details."""
+    backend = context.memory_backend
+    if backend is None or context.memory_settings is None:
+        return
+    mem_settings = context.memory_settings.memory.mem0  # type: ignore[attr-defined]
+    if not mem_settings.auto_extract:
+        return
+    try:
+        await backend.extract_and_store(
+            [_message_to_dict(m) for m in messages],
+        )
+    except Exception:
+        pass
+    context._last_extract_at = time.monotonic()
+    context._messages_since_extract = 0
+
+
 async def run_query(
     context: QueryContext,
     messages: list[ConversationMessage],
@@ -520,6 +576,9 @@ async def run_query(
         async for event, usage in _stream_compaction(trigger="auto"):
             yield event, usage
         messages, was_compacted = last_compaction_result
+        # --- memory safety net: extract before compact ---
+        if context.memory_backend is not None:
+            await _extract_before_compact(context, messages)
         # ---------------------------------------------------------------
 
         final_message: ConversationMessage | None = None
@@ -586,6 +645,9 @@ async def run_query(
 
         messages.append(final_message)
         yield AssistantTurnComplete(message=final_message, usage=usage), usage
+        # --- memory extraction after assistant response ---
+        if context.memory_backend is not None:
+            await _maybe_extract_memories(context, messages)
 
         if coordinator_context_message is not None:
             messages.append(coordinator_context_message)

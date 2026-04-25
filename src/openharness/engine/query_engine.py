@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import time
 from pathlib import Path
 from typing import AsyncIterator
 
 from openharness.api.client import SupportsStreamingMessages
 from openharness.engine.cost_tracker import CostTracker
+from openharness.memory.base import MemoryBackend, MemoryEntry
+from openharness.memory.registry import get_backend
 from openharness.coordinator.coordinator_mode import get_coordinator_user_context
 from openharness.engine.messages import ConversationMessage, TextBlock, ToolResultBlock
 from openharness.engine.query import AskUserPrompt, PermissionPrompt, QueryContext, remember_user_goal, run_query
@@ -36,6 +39,7 @@ class QueryEngine:
         ask_user_prompt: AskUserPrompt | None = None,
         hook_executor: HookExecutor | None = None,
         tool_metadata: dict[str, object] | None = None,
+        settings: object | None = None,
     ) -> None:
         self._api_client = api_client
         self._tool_registry = tool_registry
@@ -51,6 +55,10 @@ class QueryEngine:
         self._ask_user_prompt = ask_user_prompt
         self._hook_executor = hook_executor
         self._tool_metadata = tool_metadata or {}
+        self._settings = settings
+        self._memory_backend: MemoryBackend | None = None
+        self._last_extract_at: float = time.monotonic()
+        self._messages_since_extract: int = 0
         self._messages: list[ConversationMessage] = []
         self._cost_tracker = CostTracker()
 
@@ -88,6 +96,16 @@ class QueryEngine:
     def total_usage(self):
         """Return the total usage across all turns."""
         return self._cost_tracker.total
+
+    @property
+    def memory_backend(self) -> MemoryBackend | None:
+        """Return the memory backend, lazily initialized."""
+        if self._memory_backend is None and self._settings is not None:
+            try:
+                self._memory_backend = get_backend(self._settings, cwd=self._cwd)
+            except (ValueError, ImportError):
+                return None
+        return self._memory_backend
 
     def clear(self) -> None:
         """Clear the in-memory conversation history."""
@@ -162,6 +180,15 @@ class QueryEngine:
                     "prompt": user_message.text,
                 },
             )
+        # Pre-fetch relevant memories (async) before prompt construction
+        relevant_memories: list[MemoryEntry] = []
+        if self.memory_backend is not None and self._settings is not None:
+            try:
+                relevant_memories = await self.memory_backend.search(
+                    user_message.text, max_results=getattr(self._settings.memory, "max_files", 5),
+                )
+            except Exception:
+                relevant_memories = []  # Non-fatal; continue without memories
         context = QueryContext(
             api_client=self._api_client,
             tool_registry=self._tool_registry,
@@ -177,6 +204,8 @@ class QueryEngine:
             ask_user_prompt=self._ask_user_prompt,
             hook_executor=self._hook_executor,
             tool_metadata=self._tool_metadata,
+            memory_backend=self.memory_backend,
+            memory_settings=self._settings,
         )
         query_messages = list(self._messages)
         coordinator_context = self._build_coordinator_context_message()
@@ -206,6 +235,8 @@ class QueryEngine:
             ask_user_prompt=self._ask_user_prompt,
             hook_executor=self._hook_executor,
             tool_metadata=self._tool_metadata,
+            memory_backend=self.memory_backend,
+            memory_settings=self._settings,
         )
         async for event, usage in run_query(context, self._messages):
             if usage is not None:
