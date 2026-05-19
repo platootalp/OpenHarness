@@ -1,0 +1,69 @@
+---
+import { getCollection } from 'astro:content';
+import DocLayout from '../../layouts/DocLayout.astro';
+import config from '../../../site.config';
+
+const allDocs = await getCollection('docs');
+
+const counts: Record<string, number> = {};
+for (const doc of allDocs) {
+  const section = doc.id.split('/')[0] || 'overview';
+  counts[section] = (counts[section] || 0) + 1;
+}
+
+const sectionDirs = [...new Set(allDocs.map(d => d.id.split('/')[0] || 'overview'))];
+const sections = sectionDirs.map(id => ({
+  id,
+  label: id.charAt(0).toUpperCase() + id.slice(1).replace(/-/g, ' '),
+  count: counts[id] || 0,
+  href: id === 'index' ? '/docs/' : `/docs/${id}/`,
+  firstDoc: allDocs.find(d => (d.id.split('/')[0] || 'overview') === id && d.id !== 'index.md'),
+}));
+---
+
+<DocLayout title="" currentPath="/docs/">
+  <!-- Hero Section -->
+  <section class="mb-16">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4 text-[var(--color-text)]">
+        {config.name}
+        <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Docs</span>
+      </h1>
+
+      <p class="text-lg text-[var(--color-text-muted)] max-w-2xl mx-auto mb-8 leading-relaxed">
+        {config.description}
+      </p>
+
+      <div class="flex items-center justify-center gap-3 flex-wrap">
+        {sections[0]?.firstDoc && (
+          <a
+            href={sections[0].href}
+            class="px-6 py-2.5 bg-[var(--color-primary)] text-white rounded-lg font-medium text-sm hover:bg-[var(--color-primary-hover)] transition-all shadow-md hover:shadow-lg active:scale-95 no-underline"
+          >
+            Get Started &rarr;
+          </a>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Cards Grid -->
+  <section class="mb-16">
+    <h2 class="text-2xl font-bold mb-6 text-[var(--color-text)]">Sections</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {sections.map(section => (
+        <a
+          href={section.href}
+          class="group block p-5 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-transparent shadow-sm hover:shadow-md transition-all no-underline hover:-translate-y-0.5"
+        >
+          <div>
+            <h3 class="text-base font-semibold text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors">
+              {section.label}
+            </h3>
+            <span class="text-xs text-[var(--color-text-muted)]">{section.count} docs</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</DocLayout>
